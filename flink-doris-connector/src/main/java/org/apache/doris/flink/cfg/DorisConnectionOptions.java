@@ -27,18 +27,27 @@ public class DorisConnectionOptions implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    protected final String fenodes;
+    protected final String master_fenodes;
+    protected final String slave_fenodes;
     protected final String username;
     protected final String password;
 
-    public DorisConnectionOptions(String fenodes, String username, String password) {
-        this.fenodes = Preconditions.checkNotNull(fenodes, "fenodes  is empty");
+    public DorisConnectionOptions(String master_fenodes, String slave_fenodes, String username, String password) {
+        if (master_fenodes == null && slave_fenodes == null) {
+            throw new NullPointerException(String.valueOf("FE Nodes is empty"));
+        }
+        this.master_fenodes = master_fenodes;
+        this.slave_fenodes = slave_fenodes;
         this.username = username;
         this.password = password;
     }
 
-    public String getFenodes() {
-        return fenodes;
+    public String getMasterFenodes() {
+        return master_fenodes;
+    }
+
+    public String getSlaveFenodes() {
+        return slave_fenodes;
     }
 
     public String getUsername() {

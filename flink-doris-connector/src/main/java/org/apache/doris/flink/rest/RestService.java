@@ -272,8 +272,8 @@ public class RestService implements Serializable {
      * @throws IllegalArgumentException BE nodes is illegal
      */
     @VisibleForTesting
-    public static String randomBackend(DorisOptions options, DorisReadOptions readOptions, Logger logger) throws DorisException, IOException {
-        List<BackendV2.BackendRowV2> backends = getBackendsV2(options, readOptions, logger);
+    public static String randomBackend(String cluster, DorisOptions options, DorisReadOptions readOptions, Logger logger) throws DorisException, IOException {
+        List<BackendV2.BackendRowV2> backends = getBackendsV2(cluster, options, readOptions, logger);
         logger.trace("Parse beNodes '{}'.", backends);
         if (backends == null || backends.isEmpty()) {
             logger.error(ILLEGAL_ARGUMENT_MESSAGE, "beNodes", backends);
@@ -346,8 +346,13 @@ public class RestService implements Serializable {
      * @throws IllegalArgumentException BE nodes is illegal
      */
     @VisibleForTesting
-    static List<BackendV2.BackendRowV2> getBackendsV2(DorisOptions options, DorisReadOptions readOptions, Logger logger) throws DorisException, IOException {
-        String feNodes = options.getFenodes();
+    static List<BackendV2.BackendRowV2> getBackendsV2(String cluster, DorisOptions options, DorisReadOptions readOptions, Logger logger) throws DorisException, IOException {
+        String feNodes = "";
+        if(cluster.equalsIgnoreCase("slave")){
+            feNodes = options.getSlaveFenodes();
+        }else{
+            feNodes = options.getMasterFenodes();
+        }
         List<String> feNodeList = allEndpoints(feNodes, logger);
         for (String feNode: feNodeList) {
             try {

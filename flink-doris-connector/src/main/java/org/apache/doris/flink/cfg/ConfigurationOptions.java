@@ -19,7 +19,8 @@ package org.apache.doris.flink.cfg;
 
 public interface ConfigurationOptions {
     // doris fe node address
-    String DORIS_FENODES = "fenodes";
+    String MASTER_FENODES = "master.fenodes";
+    String SLAVE_FENODES = "slave.fenodes";
 
     String DORIS_DEFAULT_CLUSTER = "default_cluster";
 
