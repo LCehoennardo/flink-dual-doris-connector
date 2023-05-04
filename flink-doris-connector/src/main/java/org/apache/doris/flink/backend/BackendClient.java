@@ -43,6 +43,7 @@ import org.slf4j.LoggerFactory;
 
 /**
  * Client to request Doris BE
+ * mynote: 从BE中读数据的，包含一个scanner从doris中读数据
  */
 public class BackendClient {
     private static Logger logger = LoggerFactory.getLogger(BackendClient.class);
