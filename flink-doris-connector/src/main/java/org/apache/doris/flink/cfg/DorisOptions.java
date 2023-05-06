@@ -32,8 +32,8 @@ public class DorisOptions extends DorisConnectionOptions {
     private String tableIdentifier;
 
 
-    public DorisOptions(String fenodes, String username, String password, String tableIdentifier) {
-        super(fenodes, username, password);
+    public DorisOptions(String master_fenodes, String slave_fenodes, String username, String password, String tableIdentifier) {
+        super(master_fenodes, slave_fenodes, username, password);
         this.tableIdentifier = tableIdentifier;
     }
 
@@ -54,7 +54,8 @@ public class DorisOptions extends DorisConnectionOptions {
      * Builder of {@link DorisOptions}.
      */
     public static class Builder {
-        private String fenodes;
+        private String master_fenodes;
+        private String slave_fenodes;
         private String username;
         private String password;
         private String tableIdentifier;
@@ -86,16 +87,23 @@ public class DorisOptions extends DorisConnectionOptions {
         /**
          * required, JDBC DB url.
          */
-        public Builder setFenodes(String fenodes) {
-            this.fenodes = fenodes;
+        public Builder setMasterFenodes(String master_fenodes) {
+            this.master_fenodes = master_fenodes;
+            return this;
+        }
+
+        public Builder setSlaveFenodes(String slave_fenodes) {
+            this.slave_fenodes = slave_fenodes;
             return this;
         }
 
 
         public DorisOptions build() {
-            checkNotNull(fenodes, "No fenodes supplied.");
+            if (master_fenodes == null && slave_fenodes == null) {
+                throw new NullPointerException(String.valueOf("No fenodes supplied, please specify at least one Doris cluster."));
+            }
             checkNotNull(tableIdentifier, "No tableIdentifier supplied.");
-            return new DorisOptions(fenodes, username, password, tableIdentifier);
+            return new DorisOptions(master_fenodes, slave_fenodes, username, password, tableIdentifier);
         }
     }
 

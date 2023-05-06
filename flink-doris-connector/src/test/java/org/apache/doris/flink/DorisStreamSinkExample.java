@@ -59,7 +59,7 @@ public class DorisStreamSinkExample {
                                         .setMaxRetries(3)
                                         .setStreamLoadProp(pro).build(),
                                 DorisOptions.builder()
-                                        .setFenodes("FE_IP:8030")
+                                        .setMasterFenodes("FE_IP:8030")
                                         .setTableIdentifier("db.table")
                                         .setUsername("root")
                                         .setPassword("").build()
@@ -87,7 +87,7 @@ public class DorisStreamSinkExample {
                                         .setMaxRetries(3)
                                         .setStreamLoadProp(pro).build(),
                                 DorisOptions.builder()
-                                        .setFenodes("FE_IP:8030")
+                                        .setMasterFenodes("FE_IP:8030")
                                         .setTableIdentifier("db.table")
                                         .setUsername("root")
                                         .setPassword("").build()
@@ -107,7 +107,7 @@ public class DorisStreamSinkExample {
                 .addSink(
                         DorisSink.sink(
                                 DorisOptions.builder()
-                                        .setFenodes("192.168.52.101:8030")
+                                        .setMasterFenodes("192.168.52.101:8030")
                                         .setTableIdentifier("smarttrip_db.doris_output_format")
                                         .setUsername("root")
                                         .setPassword("").build()
@@ -149,7 +149,7 @@ public class DorisStreamSinkExample {
                                 .setMaxRetries(3)
                                 .build(),
                         DorisOptions.builder()
-                                .setFenodes("FE_IP:8030")
+                                .setMasterFenodes("FE_IP:8030")
                                 .setTableIdentifier("db.table")
                                 .setUsername("root")
                                 .setPassword("").build()
@@ -190,7 +190,7 @@ public class DorisStreamSinkExample {
                                 .setMaxRetries(3)
                                 .build(),
                         DorisOptions.builder()
-                                .setFenodes("FE_IP:8030")
+                                .setMasterFenodes("FE_IP:8030")
                                 .setTableIdentifier("db.table")
                                 .setUsername("root")
                                 .setPassword("").build()
@@ -226,7 +226,7 @@ public class DorisStreamSinkExample {
                         fields,
                         types,
                         DorisOptions.builder()
-                                .setFenodes("FE_IP:8030")
+                                .setMasterFenodes("FE_IP:8030")
                                 .setTableIdentifier("db.table")
                                 .setUsername("root")
                                 .setPassword("").build()

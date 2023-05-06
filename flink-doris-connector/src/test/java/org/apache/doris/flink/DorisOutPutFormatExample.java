@@ -55,7 +55,7 @@ public class DorisOutPutFormatExample {
                 });
 
         DorisOptions dorisOptions = DorisOptions.builder()
-                .setFenodes("FE_IP:8030")
+                .setMasterFenodes("FE_IP:8030")
                 .setTableIdentifier("db.table")
                 .setUsername("root")
                 .setPassword("").build();

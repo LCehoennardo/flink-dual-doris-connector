@@ -34,7 +34,7 @@ public class DorisConnectionOptions implements Serializable {
 
     public DorisConnectionOptions(String master_fenodes, String slave_fenodes, String username, String password) {
         if (master_fenodes == null && slave_fenodes == null) {
-            throw new NullPointerException(String.valueOf("FE Nodes is empty"));
+            throw new NullPointerException(String.valueOf("FE Nodes is empty, please specify at least one Doris cluster."));
         }
         this.master_fenodes = master_fenodes;
         this.slave_fenodes = slave_fenodes;
@@ -62,12 +62,18 @@ public class DorisConnectionOptions implements Serializable {
      * Builder for {@link DorisConnectionOptions}.
      */
     public static class DorisConnectionOptionsBuilder {
-        private String fenodes;
+        private String master_fenodes;
+        private String slave_fenodes;
         private String username;
         private String password;
 
-        public DorisConnectionOptionsBuilder withFenodes(String fenodes) {
-            this.fenodes = fenodes;
+        public DorisConnectionOptionsBuilder withMasterFenodes(String master_fenodes) {
+            this.master_fenodes = master_fenodes;
+            return this;
+        }
+
+        public DorisConnectionOptionsBuilder withSlaveFenodes(String slave_fenodes) {
+            this.slave_fenodes = slave_fenodes;
             return this;
         }
 
@@ -82,7 +88,7 @@ public class DorisConnectionOptions implements Serializable {
         }
 
         public DorisConnectionOptions build() {
-            return new DorisConnectionOptions(fenodes, username, password);
+            return new DorisConnectionOptions(master_fenodes, slave_fenodes, username, password);
         }
     }
 

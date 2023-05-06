@@ -56,7 +56,8 @@ import static org.apache.doris.flink.cfg.ConfigurationOptions.DORIS_TABLET_SIZE_
  */
 public final class DorisDynamicTableFactory implements DynamicTableSourceFactory, DynamicTableSinkFactory {
 
-    public static final ConfigOption<String> FENODES = ConfigOptions.key("fenodes").stringType().noDefaultValue().withDescription("doris fe http address.");
+    public static final ConfigOption<String> MASTER_FENODES = ConfigOptions.key("master.fenodes").stringType().noDefaultValue().withDescription("master doris fe http address.");
+    public static final ConfigOption<String> SLAVE_FENODES = ConfigOptions.key("slave.fenodes").stringType().noDefaultValue().withDescription("slave doris fe http address.");
     public static final ConfigOption<String> TABLE_IDENTIFIER = ConfigOptions.key("table.identifier").stringType().noDefaultValue().withDescription("the jdbc table name.");
     public static final ConfigOption<String> USERNAME = ConfigOptions.key("username").stringType().noDefaultValue().withDescription("the jdbc user name.");
     public static final ConfigOption<String> PASSWORD = ConfigOptions.key("password").stringType().noDefaultValue().withDescription("the jdbc password.");
@@ -144,13 +145,12 @@ public final class DorisDynamicTableFactory implements DynamicTableSourceFactory
 
     @Override
     public String factoryIdentifier() {
-        return "doris"; // used for matching to `connector = '...'`
+        return "doris-dual-cluster";
     }
 
     @Override
     public Set<ConfigOption<?>> requiredOptions() {
         final Set<ConfigOption<?>> options = new HashSet<>();
-        options.add(FENODES);
         options.add(TABLE_IDENTIFIER);
         return options;
     }
