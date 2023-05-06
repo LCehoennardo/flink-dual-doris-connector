@@ -158,7 +158,8 @@ public final class DorisDynamicTableFactory implements DynamicTableSourceFactory
     @Override
     public Set<ConfigOption<?>> optionalOptions() {
         final Set<ConfigOption<?>> options = new HashSet<>();
-        options.add(FENODES);
+        options.add(MASTER_FENODES);
+        options.add(SLAVE_FENODES);
         options.add(TABLE_IDENTIFIER);
         options.add(USERNAME);
         options.add(PASSWORD);
@@ -202,9 +203,11 @@ public final class DorisDynamicTableFactory implements DynamicTableSourceFactory
     }
 
     private DorisOptions getDorisOptions(ReadableConfig readableConfig) {
-        final String fenodes = readableConfig.get(FENODES);
+        final String master_fenodes = readableConfig.get(MASTER_FENODES);
+        final String slave_fenodes = readableConfig.get(SLAVE_FENODES);
         final DorisOptions.Builder builder = DorisOptions.builder()
-                .setFenodes(fenodes)
+                .setMasterFenodes(master_fenodes)
+                .setSlaveFenodes(slave_fenodes)
                 .setTableIdentifier(readableConfig.get(TABLE_IDENTIFIER));
 
         readableConfig.getOptional(USERNAME).ifPresent(builder::setUsername);

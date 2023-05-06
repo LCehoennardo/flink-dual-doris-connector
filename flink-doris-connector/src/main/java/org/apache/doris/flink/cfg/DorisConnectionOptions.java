@@ -34,7 +34,7 @@ public class DorisConnectionOptions implements Serializable {
 
     public DorisConnectionOptions(String master_fenodes, String slave_fenodes, String username, String password) {
         if (master_fenodes == null && slave_fenodes == null) {
-            throw new NullPointerException(String.valueOf("FE Nodes is empty, please specify at least one Doris cluster."));
+            throw new NullPointerException(String.valueOf("All FE Nodes are empty, please specify at least one Doris cluster."));
         }
         this.master_fenodes = master_fenodes;
         this.slave_fenodes = slave_fenodes;

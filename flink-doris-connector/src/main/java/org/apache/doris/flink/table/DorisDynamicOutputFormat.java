@@ -82,7 +82,8 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
     private DorisOptions options;
     private DorisReadOptions readOptions;
     private DorisExecutionOptions executionOptions;
-    private DorisStreamLoad dorisStreamLoad;
+    private DorisStreamLoad masterDorisStreamLoad;
+    private DorisStreamLoad slaveDorisStreamLoad;
     private String keysType;
 
     private transient volatile boolean closed = false;
@@ -183,14 +184,27 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
 
     @Override
     public void open(int taskNumber, int numTasks) throws IOException {
-        dorisStreamLoad = new DorisStreamLoad(
-                getBackend(),
-                options.getTableIdentifier().split("\\.")[0],
-                options.getTableIdentifier().split("\\.")[1],
-                options.getUsername(),
-                options.getPassword(),
-                executionOptions.getStreamLoadProp());
-        LOG.info("Streamload BE:{}", dorisStreamLoad.getLoadUrlStr());
+        if (options.getMasterFenodes() != null) {
+            this.masterDorisStreamLoad = new DorisStreamLoad(
+                    getBackend("master"),
+                    options.getTableIdentifier().split("\\.")[0],
+                    options.getTableIdentifier().split("\\.")[1],
+                    options.getUsername(),
+                    options.getPassword(),
+                    executionOptions.getStreamLoadProp());
+            LOG.info("Master Cluster Streamload BE:{}", this.masterDorisStreamLoad.getLoadUrlStr());
+        }
+
+        if (options.getSlaveFenodes() != null) {
+            this.slaveDorisStreamLoad = new DorisStreamLoad(
+                    getBackend("slave"),
+                    options.getTableIdentifier().split("\\.")[0],
+                    options.getTableIdentifier().split("\\.")[1],
+                    options.getUsername(),
+                    options.getPassword(),
+                    executionOptions.getStreamLoadProp());
+            LOG.info("Slave Cluster Streamload BE:{}", this.masterDorisStreamLoad.getLoadUrlStr());
+        }
 
         if (executionOptions.getBatchIntervalMs() != 0 && executionOptions.getBatchSize() != 1) {
             this.scheduler = Executors.newScheduledThreadPool(1, new ExecutorThreadFactory("doris-streamload-output" +
@@ -326,10 +340,10 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
         }
     }
 
-    private String getBackend() throws IOException {
+    private String getBackend(String cluster) throws IOException {
         try {
             //get be url from fe
-            return RestService.randomBackend(options, readOptions, LOG);
+            return RestService.randomBackend(cluster, options, readOptions, LOG);
         } catch (IOException | DorisException e) {
             LOG.error("get backends info fail");
             throw new IOException(e);
