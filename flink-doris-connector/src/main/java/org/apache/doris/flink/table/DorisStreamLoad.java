@@ -95,9 +95,9 @@ public class DorisStreamLoad implements Serializable {
         this.loadUrlStr = String.format(loadUrlPattern, hostPort, this.db, this.tbl);
     }
 
-    public void load(String value) throws StreamLoadException {
+    public void load(String cluster, String value) throws StreamLoadException {
         LoadResponse loadResponse = loadBatch(value);
-        LOG.info("Streamload Response:{}", loadResponse);
+        LOG.info(cluster + " Streamload Response:{}", loadResponse);
         if (loadResponse.status != 200) {
             throw new StreamLoadException("stream load error: " + loadResponse.respContent);
         } else {

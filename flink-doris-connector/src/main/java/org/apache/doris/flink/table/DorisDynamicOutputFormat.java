@@ -330,7 +330,7 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
         for (int i = 0; i <= executionOptions.getMaxRetries(); i++) {
             if (masterDorisStreamLoad != null && !master) {
                 try {
-                    masterDorisStreamLoad.load(result);
+                    masterDorisStreamLoad.load("Master", result);
                     master = true;
                 } catch (StreamLoadException e) {
                     LOG.error("Master cluster sink error, retry times = {}", i, e);
@@ -349,7 +349,7 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
             }
             if (slaveDorisStreamLoad != null && !slave) {
                 try {
-                    slaveDorisStreamLoad.load(result);
+                    slaveDorisStreamLoad.load("Slave", result);
                     slave = true;
                 } catch (StreamLoadException e) {
                     LOG.error("Slave cluster sink error, retry times = {}", i, e);
