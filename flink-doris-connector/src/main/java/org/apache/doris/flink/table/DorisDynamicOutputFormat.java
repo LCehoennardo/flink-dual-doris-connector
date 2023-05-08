@@ -297,7 +297,13 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
                 LOG.warn("Writing records to doris failed.", e);
                 throw new RuntimeException("Writing records to doris failed.", e);
             } finally {
-                this.dorisStreamLoad.close();
+                if (this.masterDorisStreamLoad != null) {
+                    this.masterDorisStreamLoad.close();
+                }
+
+                if (this.slaveDorisStreamLoad != null) {
+                    this.slaveDorisStreamLoad.close();
+                }
             }
         }
         checkFlushException();
@@ -318,24 +324,52 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
         } else {
             result = String.join(this.lineDelimiter, batch);
         }
+
+        boolean master = masterDorisStreamLoad == null;
+        boolean slave = slaveDorisStreamLoad == null;
         for (int i = 0; i <= executionOptions.getMaxRetries(); i++) {
-            try {
-                dorisStreamLoad.load(result);
+            if (masterDorisStreamLoad != null && !master) {
+                try {
+                    masterDorisStreamLoad.load(result);
+                    master = true;
+                } catch (StreamLoadException e) {
+                    LOG.error("Master cluster sink error, retry times = {}", i, e);
+                    if (i >= executionOptions.getMaxRetries()) {
+                        throw new IOException(e);
+                    }
+                    try {
+                        masterDorisStreamLoad.setHostPort(getBackend("master"));
+                        LOG.warn("Streamload to master cluster error, switch be: {}", masterDorisStreamLoad.getLoadUrlStr(), e);
+                        Thread.sleep(1000 * i);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        throw new IOException("unable to flush to master cluster; interrupted while doing another attempt", e);
+                    }
+                }
+            }
+            if (slaveDorisStreamLoad != null && !slave) {
+                try {
+                    slaveDorisStreamLoad.load(result);
+                    slave = true;
+                } catch (StreamLoadException e) {
+                    LOG.error("Slave cluster sink error, retry times = {}", i, e);
+                    if (i >= executionOptions.getMaxRetries()) {
+                        throw new IOException(e);
+                    }
+                    try {
+                        slaveDorisStreamLoad.setHostPort(getBackend("slave"));
+                        LOG.warn("Streamload to slave cluster error, switch be: {}", slaveDorisStreamLoad.getLoadUrlStr(), e);
+                        Thread.sleep(1000 * i);
+                    } catch (InterruptedException ex) {
+                        Thread.currentThread().interrupt();
+                        throw new IOException("unable to flush to slave cluster; interrupted while doing another attempt", e);
+                    }
+                }
+            }
+
+            if (master && slave) {
                 batch.clear();
                 break;
-            } catch (StreamLoadException e) {
-                LOG.error("doris sink error, retry times = {}", i, e);
-                if (i >= executionOptions.getMaxRetries()) {
-                    throw new IOException(e);
-                }
-                try {
-                    dorisStreamLoad.setHostPort(getBackend());
-                    LOG.warn("streamload error,switch be: {}", dorisStreamLoad.getLoadUrlStr(), e);
-                    Thread.sleep(1000 * i);
-                } catch (InterruptedException ex) {
-                    Thread.currentThread().interrupt();
-                    throw new IOException("unable to flush; interrupted while doing another attempt", e);
-                }
             }
         }
     }
@@ -364,8 +398,13 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
             this.optionsBuilder = DorisOptions.builder();
         }
 
-        public Builder setFenodes(String fenodes) {
-            this.optionsBuilder.setFenodes(fenodes);
+        public Builder setMasterFenodes(String master_fenodes) {
+            this.optionsBuilder.setMasterFenodes(master_fenodes);
+            return this;
+        }
+
+        public Builder setSlaveFenodes(String slave_fenodes) {
+            this.optionsBuilder.setSlaveFenodes(slave_fenodes);
             return this;
         }
 

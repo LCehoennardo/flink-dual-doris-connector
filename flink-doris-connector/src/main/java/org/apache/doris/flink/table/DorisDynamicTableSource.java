@@ -75,7 +75,7 @@ public final class DorisDynamicTableSource implements ScanTableSource, LookupTab
             throw new RuntimeException("Failed fetch doris partitions");
         }
         DorisRowDataInputFormat.Builder builder = DorisRowDataInputFormat.builder()
-                .setFenodes(options.getFenodes())
+                .setFenodes(options.getMasterFenodes())
                 .setUsername(options.getUsername())
                 .setPassword(options.getPassword())
                 .setTableIdentifier(options.getTableIdentifier())

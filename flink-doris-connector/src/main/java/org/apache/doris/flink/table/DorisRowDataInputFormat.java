@@ -189,7 +189,7 @@ public class DorisRowDataInputFormat extends RichInputFormat<RowData, DorisTable
         }
 
         public Builder setFenodes(String fenodes) {
-            this.optionsBuilder.setFenodes(fenodes);
+            this.optionsBuilder.setMasterFenodes(fenodes);
             return this;
         }
 
