@@ -1,3 +1,3 @@
-export THRIFT_BIN=/opt/homebrew/bin/thrift
+#export THRIFT_BIN=
 #export MVN_BIN=
 #export JAVA_HOME=
