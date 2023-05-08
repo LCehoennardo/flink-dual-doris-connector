@@ -298,7 +298,7 @@ public class RestService implements Serializable {
     @Deprecated
     @VisibleForTesting
     static List<BackendRow> getBackends(DorisOptions options, DorisReadOptions readOptions, Logger logger) throws DorisException, IOException {
-        String feNodes = options.getFenodes();
+        String feNodes = options.getMasterFenodes();
         String feNode = randomEndpoint(feNodes, logger);
         String beUrl = "http://" + feNode + BACKENDS;
         HttpGet httpGet = new HttpGet(beUrl);
@@ -347,8 +347,8 @@ public class RestService implements Serializable {
      */
     @VisibleForTesting
     static List<BackendV2.BackendRowV2> getBackendsV2(String cluster, DorisOptions options, DorisReadOptions readOptions, Logger logger) throws DorisException, IOException {
-        String feNodes = "";
-        if(cluster.equalsIgnoreCase("slave")){
+        String feNodes = null;
+        if(cluster != null && cluster.equalsIgnoreCase("slave")){
             feNodes = options.getSlaveFenodes();
         }else{
             feNodes = options.getMasterFenodes();
@@ -366,7 +366,7 @@ public class RestService implements Serializable {
                 logger.info("Doris FE node {} is unavailable: {}, Request the next Doris FE node", feNode, e.getMessage());
             }
         }
-        String errMsg = "No Doris FE is available, please check configuration";
+        String errMsg = "No "+cluster+" Doris FE is available, please check configuration";
         logger.error(errMsg);
         throw new DorisException(errMsg);
     }
@@ -410,11 +410,7 @@ public class RestService implements Serializable {
     @VisibleForTesting
     static String getUriStr(DorisOptions options, Logger logger) throws IllegalArgumentException {
         String[] identifier = parseIdentifier(options.getTableIdentifier(), logger);
-        return "http://" +
-                randomEndpoint(options.getFenodes(), logger) + API_PREFIX +
-                "/" + identifier[0] +
-                "/" + identifier[1] +
-                "/";
+        return options.getMasterFenodes() != null ? "http://" + randomEndpoint(options.getMasterFenodes(), logger) + "/api" + "/" + identifier[0] + "/" + identifier[1] + "/" : "http://" + randomEndpoint(options.getSlaveFenodes(), logger) + "/api" + "/" + identifier[0] + "/" + identifier[1] + "/";
     }
 
     /**
