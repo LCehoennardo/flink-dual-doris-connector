@@ -203,7 +203,7 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
                     options.getUsername(),
                     options.getPassword(),
                     executionOptions.getStreamLoadProp());
-            LOG.info("Slave Cluster Streamload BE:{}", this.masterDorisStreamLoad.getLoadUrlStr());
+            LOG.info("Slave Cluster Streamload BE:{}", this.slaveDorisStreamLoad.getLoadUrlStr());
         }
 
         if (executionOptions.getBatchIntervalMs() != 0 && executionOptions.getBatchSize() != 1) {
