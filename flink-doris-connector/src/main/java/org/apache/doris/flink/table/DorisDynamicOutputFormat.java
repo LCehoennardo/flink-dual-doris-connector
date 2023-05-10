@@ -112,7 +112,7 @@ public class DorisDynamicOutputFormat<T> extends RichOutputFormat<T> {
 
     /**
      * parse table keysType
-     *
+     * 解析数据模型类型
      * @return keysType
      */
     private String parseKeysType() {
